@@ -6,7 +6,7 @@ import './App.css';
 const baseObj = {"name": "", "start": 0, "length": 1, "priority": 0};
 
 function App() {
-  const [algorithm, setAlgorithm] = useState('');
+  const [algorithm, setAlgorithm] = useState('fcfs');
   const [QuantoTime, setQuantoTime] = useState(1);
   const [rows, setRows] = useState(Array(3).fill(baseObj));
   const [sim, setSim] = useState(false);
@@ -25,7 +25,14 @@ function App() {
         </h2>
         <form action="">
           <div className="algoRadio">
-            <input onClick={() => {setAlgorithm("fcfs"); setSim(false)}} type="radio" id="fcfs" name="algorithm" value="fcfs"/>
+            <input 
+              onClick={() => {setAlgorithm("fcfs"); setSim(false)}} 
+              type="radio" 
+              id="fcfs" 
+              name="algorithm" 
+              value="fcfs"
+              checked={algorithm === "fcfs"}
+              />
             <label htmlFor="fcfs">First-Come, First-Served (FCFS)</label>
           </div>
           <div className="algoRadio">
