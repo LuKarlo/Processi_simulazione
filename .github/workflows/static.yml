@@ -1,0 +1,50 @@
+# Nome del processo che apparirà nella scheda "Actions"
+name: Deploy Vite Site
+
+on:
+  # Avvia il processo ogni volta che fai un push sul ramo "main"
+  push:
+    branches: ["main"]
+
+  # Ti permette di avviarlo manualmente dalla scheda Actions
+  workflow_dispatch:
+
+# Permessi necessari per scrivere sulla sezione Pages del repository
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Evita che più deploy contemporanei creino conflitti
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del codice
+        uses: actions/checkout@v4
+
+      - name: Configura Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Installa le dipendenze
+        run: npm install
+
+      - name: Crea la build (genera la cartella dist)
+        run: npm run build
+
+      - name: Carica i file per il deploy
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Questo è il percorso della cartella creata da Vite
+          path: './dist'
+
+      - name: Pubblica su GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
