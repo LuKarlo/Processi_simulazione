@@ -31,7 +31,7 @@ function App() {
               id="fcfs" 
               name="algorithm" 
               value="fcfs"
-              checked={algorithm === "fcfs"}
+              defaultChecked
               />
             <label htmlFor="fcfs">First-Come, First-Served (FCFS)</label>
           </div>

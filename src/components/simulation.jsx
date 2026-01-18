@@ -186,9 +186,7 @@ export default function SimulationProcess({ data, algorithm, quantum = 1 }) {
 
 
 const createLayout = (timeline, data) => {
-    const firstStartTime = Math.min(...timeline.map(e =>
-        e.actualStart !== undefined ? Number(e.actualStart) : Number(e.start)
-    ));
+    const firstStartTime = Math.min(...data.map(e => Number(e.start)));
 
     const totalTime = timeline[timeline.length - 1].end;
 
@@ -196,8 +194,8 @@ const createLayout = (timeline, data) => {
     const displayDuration = totalTime - firstStartTime;
 
     const renderTimeline = () => {
-        // Reset WT locale per il calcolo corretto
-        let localWt = 0;
+        // Reset wt locale per il calcolo corretto
+        wt = 0;
 
         let completeTimestamp = Array.from({ length: displayDuration }, () => ({
             running: "",
@@ -211,7 +209,7 @@ const createLayout = (timeline, data) => {
             const end = e.end;
 
             // Calcolo Waiting Time (Esempio semplificato: Start Reale - Arrivo)
-            localWt += (start - Number(e.start));
+            wt += (start - Number(e.start));
 
             // Riempiamo i cicli sottraendo l'offset
             for (let t = start; t < end; t++) {
@@ -252,22 +250,21 @@ const createLayout = (timeline, data) => {
         // 4. Trasformiamo i dati in JSX (Tabella o Div)
         return (
             <>
-
                 {completeTimestamp.map((e, index) => {
                     const bg = e.running ? processColors[e.running] : "#333";
+                    // IL CICLO REALE CORRENTE
+                    const currentCycle = index + firstStartTime; 
 
                     return (
-                        <div
-                            className="cicle"
-                            style={{ height: `${60 * data.length}px` }}
-                            key={index}>
+                        <div className="cicle" style={{ height: `${60 * data.length}px` }} key={index}>
                             <div
                                 style={{ background: bg, top: `${60 * data.findIndex(obj => obj.name === e.running)}px` }}
                                 className={e.running ? "" : "hide"}
                             ></div>
                             <span className="tooltip">
                                 <ul>
-                                    <li><strong>Ciclo: {Number(index) + Number(displayDuration)}</strong></li>
+                                    {/* QUI: Usa currentCycle invece di displayDuration */}
+                                    <li><strong>Ciclo: {currentCycle}</strong></li>
                                     {e.running ? <li>Running: {e.running}</li> : <li>CPU IDLE</li>}
                                     {e.arrived && <li>Arrivato: {e.arrived}</li>}
                                     {e.finished && <li>Terminato: {e.finished}</li>}
@@ -276,17 +273,16 @@ const createLayout = (timeline, data) => {
                         </div>
                     )
                 })}
-                <table
-                    className="bgtable"
-                    style={{ height: `${60 * data.length + 2}px` }}
-                >
+
+                <table className="bgtable" style={{ height: `${60 * data.length + 2}px` }}>
                     <tbody>
-                        {data.map((_, index) => (
-                            <tr key={index}>
+                        {data.map((_, rowIndex) => (
+                            <tr key={rowIndex}>
                                 {completeTimestamp.map((_, i) => (
                                     <td key={i}>
-                                        {(index + 1) == data.length ? (
-                                            <span className="numberCicle">{i + displayDuration}</span>
+                                        {/* QUI: Mostra il numero solo nell'ultima riga e usa firstStartTime */}
+                                        {(rowIndex + 1) === data.length ? (
+                                            <span className="numberCicle">{i + firstStartTime}</span>
                                         ) : ""}
                                     </td>
                                 ))}
@@ -294,7 +290,6 @@ const createLayout = (timeline, data) => {
                         ))}
                     </tbody>
                 </table>
-
             </>
         );
     };
