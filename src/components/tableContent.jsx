@@ -37,7 +37,7 @@ export default function TableData({ algorithm, rows, setRows }) {
                             type="text" 
                             name={`processName${index}`} 
                             onChange={(e) => {editValueRows(index, "name", e.target.value)}} 
-                            value={rows[index].name} 
+                            value={`P${index}`} 
                         />
                     </td>
                     <td>
